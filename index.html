@@ -6,13 +6,13 @@
   <title>Sistem Penjanaan Surat Perletakan Jawatan</title>
   <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Google Font Hurricane untuk signature -->
+  <!-- Google Font Hurricane untuk tandatangan teks -->
   <link href="https://fonts.googleapis.com/css2?family=Hurricane&display=swap" rel="stylesheet">
-  <!-- html2pdf.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" 
-          integrity="sha512-YcsIpTFRc0tHEgYpP+TUPn6yYP0T7Dcv/xD7Hih5oOH0S8Q+F0Mr2ygZ+Kp+S0zMfX7WQbhBsD6K0yZ0JULH7Q==" 
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
+    /* Semua teks menggunakan saiz asas yang sama */
+    body, p, input, textarea, select {
+      font-size: 1rem;
+    }
     /* Untuk tandatangan teks guna font Hurricane */
     .signature-text {
       font-family: 'Hurricane', cursive;
@@ -24,7 +24,7 @@
       background: #fff;
       touch-action: none;
     }
-    /* CSS untuk page break pada attachments dalam PDF */
+    /* Page break untuk attachments dalam PDF */
     @media print {
       .page-break {
         page-break-before: always;
@@ -34,7 +34,7 @@
 </head>
 <body class="bg-gray-100 p-4">
   <!-- BORANG INPUT -->
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow text-base">
     <h1 class="text-2xl font-bold mb-4">Sistem Penjanaan Surat Perletakan Jawatan</h1>
     <button id="clearAllBtn" class="mb-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Clear All</button>
 
@@ -163,7 +163,7 @@
           <span class="ml-2">Lukis Tandatangan</span>
         </label>
       </div>
-      <!-- Signature Teks (font Hurricane) -->
+      <!-- Signature Teks (gunakan font Hurricane) -->
       <div id="signatureTextContainer" class="mt-2">
         <label class="block font-semibold">Masukkan Tandatangan (Teks):</label>
         <input type="text" id="signatureText" placeholder="cth: Aidel" class="border rounded p-2 w-full signature-text">
@@ -186,38 +186,33 @@
   </div>
 
   <!-- PRATONTON SURAT -->
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow mt-6" id="letterPreview">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow text-base mt-6" id="letterPreview">
     <!-- Header Pengirim -->
     <div class="mb-4">
-      <p id="previewSenderName" class="whitespace-pre-line font-semibold">[Nama Pekerja]</p>
-      <p id="previewSenderJawatan" class="whitespace-pre-line">[Jawatan Pekerja]</p>
-      <div id="previewSenderAlamat" class="whitespace-pre-line">
-        <!-- Alamat Pengirim dipaparkan dalam baris berasingan dengan koma -->
-      </div>
+      <p id="previewSenderName" class="font-semibold">[Nama Pekerja]</p>
+      <p id="previewSenderJawatan">[Jawatan Pekerja]</p>
+      <p id="previewSenderAlamat">[Alamat Pekerja], [Poskod], [Bandar], [Negeri].</p>
     </div>
 
-    <!-- Header Penerima & Tarikh Surat -->
+    <!-- Header Penerima & Tarikh Surat (Tarikh di sebelah kanan, selari dengan baris terakhir alamat penerima) -->
     <div class="flex justify-between items-end mb-4">
       <div>
-        <p id="previewReceiverNama" class="whitespace-pre-line font-semibold">[Nama Penerima]</p>
-        <p id="previewReceiverJawatan" class="whitespace-pre-line">[Jawatan Penerima]</p>
-        <p id="previewReceiverSyarikat" class="whitespace-pre-line">[Nama Syarikat (Penerima)]</p>
-        <div id="previewReceiverAlamat" class="whitespace-pre-line">
-          <!-- Alamat Penerima dipaparkan dalam baris berasingan dengan koma -->
-        </div>
+        <p id="previewReceiverNama" class="font-semibold">[Nama Penerima]</p>
+        <p id="previewReceiverJawatan">[Jawatan Penerima]</p>
+        <p id="previewReceiverSyarikat">[Nama Syarikat (Penerima)]</p>
+        <p id="previewReceiverAlamat">[Alamat], [Poskod], [Bandar], [Negeri].</p>
       </div>
-      <!-- Tarikh Surat: berada di sebelah kanan dan selari dengan baris terakhir alamat penerima -->
       <div>
         <p id="previewTarikhSurat">[Tarikh Surat]</p>
       </div>
     </div>
 
     <!-- Isi Surat -->
-    <div id="suratBody" class="leading-relaxed text-sm mb-4">
+    <div id="suratBody" class="mb-4">
       <p id="previewIsiSurat" class="mb-4">
         [Nama Pekerja], [Jawatan Pekerja] dari [Jabatan Pekerja] di [Nama Syarikat (Pengirim)]. Tarikh akhir perkhidmatan saya adalah pada [Tarikh Akhir Bekerja].
       </p>
-      <!-- Kandungan tambahan (perenggan baru) -->
+      <!-- Kandungan tambahan (perenggan baru) dengan satu senggang baris sebelum perenggan kedua dan seterusnya -->
       <div id="previewKandungan" class="mb-4"></div>
       <p class="mb-4">Sekian, terima kasih.</p>
       <p class="mb-4">Yang benar,</p>
@@ -227,12 +222,14 @@
       <p id="finalSenderName" class="font-semibold">[Nama Pekerja]</p>
     </div>
 
-    <!-- Attachments (dipaparkan pada halaman baru dalam PDF) -->
+    <!-- Attachments (halaman baru dalam PDF) -->
     <div id="previewAttachments" class="page-break mt-4">
       <div id="previewAttachmentsContent"></div>
     </div>
   </div>
 
+  <!-- jsPDF Library CDN (versi UMD) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     // Fungsi format tarikh ke "12 Ogos 2025"
     function formatDate(dateStr) {
@@ -247,18 +244,12 @@
       document.getElementById('previewSenderName').textContent = senderName;
       document.getElementById('previewSenderJawatan').textContent =
         document.getElementById('senderJawatan').value || '[Jawatan Pekerja]';
-
-      // Alamat Pengirim: buat row baru untuk setiap [Alamat], [Poskod], [Bandar], [Negeri] dengan koma
       const senderAlamat = document.getElementById('senderAlamat').value || '[Alamat Pekerja]';
       const senderPoskod = document.getElementById('senderPoskod').value || '[Poskod]';
       const senderBandar = document.getElementById('senderBandar').value || '[Bandar]';
       const senderNegeri = document.getElementById('senderNegeri').value || '[Negeri]';
-      document.getElementById('previewSenderAlamat').innerHTML = `
-        <p>${senderAlamat},</p>
-        <p>${senderPoskod},</p>
-        <p>${senderBandar},</p>
-        <p>${senderNegeri}.</p>
-      `;
+      document.getElementById('previewSenderAlamat').textContent =
+        `${senderAlamat}, ${senderPoskod}, ${senderBandar}, ${senderNegeri}.`;
 
       // Penerima
       const receiverName = document.getElementById('receiverNama').value || '[Nama Penerima]';
@@ -267,18 +258,12 @@
         document.getElementById('receiverJawatan').value || '[Jawatan Penerima]';
       document.getElementById('previewReceiverSyarikat').textContent =
         document.getElementById('receiverSyarikat').value || '[Nama Syarikat (Penerima)]';
-
-      // Alamat Penerima: buat row baru untuk setiap [Alamat], [Poskod], [Bandar], [Negeri] dengan koma
       const receiverAlamat = document.getElementById('receiverAlamat').value || '[Alamat]';
       const receiverPoskod = document.getElementById('receiverPoskod').value || '[Poskod]';
       const receiverBandar = document.getElementById('receiverBandar').value || '[Bandar]';
       const receiverNegeri = document.getElementById('receiverNegeri').value || '[Negeri]';
-      document.getElementById('previewReceiverAlamat').innerHTML = `
-        <p>${receiverAlamat},</p>
-        <p>${receiverPoskod},</p>
-        <p>${receiverBandar},</p>
-        <p>${receiverNegeri}.</p>
-      `;
+      document.getElementById('previewReceiverAlamat').textContent =
+        `${receiverAlamat}, ${receiverPoskod}, ${receiverBandar}, ${receiverNegeri}.`;
 
       // Tarikh Surat
       const tarikhSuratVal = document.getElementById('tarikhSurat').value;
@@ -292,7 +277,7 @@
       document.getElementById('previewIsiSurat').textContent =
         `${senderName}, ${document.getElementById('senderJawatan').value || '[Jawatan Pekerja]'} dari ${senderJabatan} di ${senderSyarikat}. Tarikh akhir perkhidmatan saya adalah pada ${formattedTarikhAkhir}.`;
 
-      // Kandungan tambahan: setiap perenggan baru dengan <br> sebelum perenggan kedua dan seterusnya
+      // Kandungan tambahan: setiap perenggan baru dengan satu <br> sebelum perenggan kedua dan seterusnya
       const kandunganContainer = document.getElementById('previewKandungan');
       kandunganContainer.innerHTML = '';
       let num = 2;
@@ -446,7 +431,6 @@
     canvas.addEventListener('touchend', endDrawing);
     canvas.addEventListener('touchmove', draw);
 
-    // Clear canvas
     document.getElementById('clearCanvasBtn').addEventListener('click', () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       updatePreview();
@@ -517,23 +501,18 @@
       updatePreview();
     });
 
-    // Butang Muat Turun PDF – Generate PDF bersaiz A4
+    // Butang Muat Turun PDF – Guna jsPDF
     document.getElementById('downloadBtn').addEventListener('click', () => {
-      const letterElement = document.getElementById('letterPreview');
-      if (!letterElement) {
-        console.error("Elemen 'letterPreview' tidak ditemui.");
-        return;
-      }
-      const opt = {
-        margin: 0.5,
-        filename: 'Surat-Perletakan-Jawatan.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().from(letterElement).set(opt).save()
-        .then(() => { console.log("PDF berjaya dijana."); })
-        .catch(err => { console.error("Ralat ketika menjana PDF:", err); });
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+      doc.html(document.getElementById('letterPreview'), {
+        callback: function (doc) {
+          doc.save("Surat-Perletakan-Jawatan.pdf");
+        },
+        margin: [20, 20, 20, 20],
+        autoPaging: 'text',
+        html2canvas: { scale: 2 }
+      });
     });
 
     updatePreview();
