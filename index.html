@@ -6,14 +6,14 @@
   <title>Sistem Penjanaan Surat Perletakan Jawatan</title>
   <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Google Font Hurricane untuk tandatangan teks -->
+  <!-- Google Font Hurricane untuk signature -->
   <link href="https://fonts.googleapis.com/css2?family=Hurricane&display=swap" rel="stylesheet">
   <!-- html2pdf.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" 
           integrity="sha512-YcsIpTFRc0tHEgYpP+TUPn6yYP0T7Dcv/xD7Hih5oOH0S8Q+F0Mr2ygZ+Kp+S0zMfX7WQbhBsD6K0yZ0JULH7Q==" 
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
-    /* Gunakan font Hurricane untuk tandatangan teks */
+    /* Untuk tandatangan teks guna font Hurricane */
     .signature-text {
       font-family: 'Hurricane', cursive;
       font-size: 32px;
@@ -24,7 +24,7 @@
       background: #fff;
       touch-action: none;
     }
-    /* Page break untuk attachments dalam PDF */
+    /* CSS untuk page break pada attachments dalam PDF */
     @media print {
       .page-break {
         page-break-before: always;
@@ -163,7 +163,7 @@
           <span class="ml-2">Lukis Tandatangan</span>
         </label>
       </div>
-      <!-- Signature Teks (gunakan font Hurricane) -->
+      <!-- Signature Teks (font Hurricane) -->
       <div id="signatureTextContainer" class="mt-2">
         <label class="block font-semibold">Masukkan Tandatangan (Teks):</label>
         <input type="text" id="signatureText" placeholder="cth: Aidel" class="border rounded p-2 w-full signature-text">
@@ -187,24 +187,37 @@
 
   <!-- PRATONTON SURAT -->
   <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow mt-6" id="letterPreview">
+    <!-- Header Pengirim -->
     <div class="mb-4">
       <p id="previewSenderName" class="whitespace-pre-line font-semibold">[Nama Pekerja]</p>
       <p id="previewSenderJawatan" class="whitespace-pre-line">[Jawatan Pekerja]</p>
-      <p id="previewSenderAlamat" class="whitespace-pre-line">[Alamat Pekerja], [Poskod], [Bandar], [Negeri]</p>
+      <div id="previewSenderAlamat" class="whitespace-pre-line">
+        <!-- Alamat Pengirim dipaparkan dalam baris berasingan dengan koma -->
+      </div>
     </div>
-    <div class="mb-4">
-      <p id="previewReceiverNama" class="whitespace-pre-line font-semibold">[Nama Penerima]</p>
-      <p id="previewReceiverJawatan" class="whitespace-pre-line">[Jawatan Penerima]</p>
-      <p id="previewReceiverSyarikat" class="whitespace-pre-line">[Nama Syarikat (Penerima)]</p>
-      <p id="previewReceiverAlamat" class="whitespace-pre-line">[Alamat], [Poskod], [Bandar], [Negeri]</p>
+
+    <!-- Header Penerima & Tarikh Surat -->
+    <div class="flex justify-between items-end mb-4">
+      <div>
+        <p id="previewReceiverNama" class="whitespace-pre-line font-semibold">[Nama Penerima]</p>
+        <p id="previewReceiverJawatan" class="whitespace-pre-line">[Jawatan Penerima]</p>
+        <p id="previewReceiverSyarikat" class="whitespace-pre-line">[Nama Syarikat (Penerima)]</p>
+        <div id="previewReceiverAlamat" class="whitespace-pre-line">
+          <!-- Alamat Penerima dipaparkan dalam baris berasingan dengan koma -->
+        </div>
+      </div>
+      <!-- Tarikh Surat: berada di sebelah kanan dan selari dengan baris terakhir alamat penerima -->
+      <div>
+        <p id="previewTarikhSurat">[Tarikh Surat]</p>
+      </div>
     </div>
-    <p id="previewTarikhSurat" class="mb-4">[Tarikh Surat]</p>
-    <h2 class="font-bold text-base mb-4">NOTIS PERLETAKAN JAWATAN</h2>
-    <div class="leading-relaxed text-sm" id="suratBody">
+
+    <!-- Isi Surat -->
+    <div id="suratBody" class="leading-relaxed text-sm mb-4">
       <p id="previewIsiSurat" class="mb-4">
         [Nama Pekerja], [Jawatan Pekerja] dari [Jabatan Pekerja] di [Nama Syarikat (Pengirim)]. Tarikh akhir perkhidmatan saya adalah pada [Tarikh Akhir Bekerja].
       </p>
-      <!-- Kandungan tambahan dengan numbering bermula dari 2 dan <br> untuk senggang -->
+      <!-- Kandungan tambahan (perenggan baru) -->
       <div id="previewKandungan" class="mb-4"></div>
       <p class="mb-4">Sekian, terima kasih.</p>
       <p class="mb-4">Yang benar,</p>
@@ -213,7 +226,8 @@
       </div>
       <p id="finalSenderName" class="font-semibold">[Nama Pekerja]</p>
     </div>
-    <!-- Attachments (pada halaman baru dalam PDF) -->
+
+    <!-- Attachments (dipaparkan pada halaman baru dalam PDF) -->
     <div id="previewAttachments" class="page-break mt-4">
       <div id="previewAttachmentsContent"></div>
     </div>
@@ -228,31 +242,43 @@
     }
 
     function updatePreview() {
-      // Maklumat Pengirim
+      // Pengirim
       const senderName = document.getElementById('senderNama').value || '[Nama Pekerja]';
       document.getElementById('previewSenderName').textContent = senderName;
       document.getElementById('previewSenderJawatan').textContent =
         document.getElementById('senderJawatan').value || '[Jawatan Pekerja]';
+
+      // Alamat Pengirim: buat row baru untuk setiap [Alamat], [Poskod], [Bandar], [Negeri] dengan koma
       const senderAlamat = document.getElementById('senderAlamat').value || '[Alamat Pekerja]';
       const senderPoskod = document.getElementById('senderPoskod').value || '[Poskod]';
       const senderBandar = document.getElementById('senderBandar').value || '[Bandar]';
       const senderNegeri = document.getElementById('senderNegeri').value || '[Negeri]';
-      document.getElementById('previewSenderAlamat').textContent =
-        `${senderAlamat}, ${senderPoskod}, ${senderBandar}, ${senderNegeri}`;
+      document.getElementById('previewSenderAlamat').innerHTML = `
+        <p>${senderAlamat},</p>
+        <p>${senderPoskod},</p>
+        <p>${senderBandar},</p>
+        <p>${senderNegeri}.</p>
+      `;
 
-      // Maklumat Penerima
+      // Penerima
       const receiverName = document.getElementById('receiverNama').value || '[Nama Penerima]';
       document.getElementById('previewReceiverNama').textContent = receiverName;
       document.getElementById('previewReceiverJawatan').textContent =
         document.getElementById('receiverJawatan').value || '[Jawatan Penerima]';
       document.getElementById('previewReceiverSyarikat').textContent =
         document.getElementById('receiverSyarikat').value || '[Nama Syarikat (Penerima)]';
+
+      // Alamat Penerima: buat row baru untuk setiap [Alamat], [Poskod], [Bandar], [Negeri] dengan koma
       const receiverAlamat = document.getElementById('receiverAlamat').value || '[Alamat]';
       const receiverPoskod = document.getElementById('receiverPoskod').value || '[Poskod]';
       const receiverBandar = document.getElementById('receiverBandar').value || '[Bandar]';
       const receiverNegeri = document.getElementById('receiverNegeri').value || '[Negeri]';
-      document.getElementById('previewReceiverAlamat').textContent =
-        `${receiverAlamat}, ${receiverPoskod}, ${receiverBandar}, ${receiverNegeri}`;
+      document.getElementById('previewReceiverAlamat').innerHTML = `
+        <p>${receiverAlamat},</p>
+        <p>${receiverPoskod},</p>
+        <p>${receiverBandar},</p>
+        <p>${receiverNegeri}.</p>
+      `;
 
       // Tarikh Surat
       const tarikhSuratVal = document.getElementById('tarikhSurat').value;
@@ -266,15 +292,14 @@
       document.getElementById('previewIsiSurat').textContent =
         `${senderName}, ${document.getElementById('senderJawatan').value || '[Jawatan Pekerja]'} dari ${senderJabatan} di ${senderSyarikat}. Tarikh akhir perkhidmatan saya adalah pada ${formattedTarikhAkhir}.`;
 
-      // Kandungan tambahan: setiap perenggan baru dengan <br> dihadapan (mulai dari perenggan kedua)
+      // Kandungan tambahan: setiap perenggan baru dengan <br> sebelum perenggan kedua dan seterusnya
       const kandunganContainer = document.getElementById('previewKandungan');
       kandunganContainer.innerHTML = '';
       let num = 2;
-      document.querySelectorAll('#kandunganFields textarea').forEach((ta, index) => {
+      document.querySelectorAll('#kandunganFields textarea').forEach((ta) => {
         if (ta.value.trim()) {
           const p = document.createElement('p');
           p.className = 'mb-4';
-          // Tambah <br> sebelum perenggan kedua dan seterusnya
           p.innerHTML = (num > 2 ? '<br>' : '') + num + '. ' + ta.value;
           kandunganContainer.appendChild(p);
           num++;
@@ -298,10 +323,10 @@
       }
       signaturePreview.innerHTML = sigHTML;
 
-      // Nama pengirim di bawah signature
+      // Nama Pengirim di bawah Signature
       document.getElementById('finalSenderName').textContent = senderName;
 
-      // Attachments: setiap fail dipaparkan satu preview
+      // Attachments: setiap file dipaparkan satu preview
       const attachmentsInput = document.getElementById('attachmentsInput');
       const previewAttachmentsContent = document.getElementById('previewAttachmentsContent');
       previewAttachmentsContent.innerHTML = '';
@@ -341,7 +366,7 @@
       el.addEventListener('change', updatePreview);
     });
 
-    // Tambah kandungan
+    // Tambah Kandungan
     document.getElementById('addKandunganBtn').addEventListener('click', () => {
       const container = document.getElementById('kandunganFields');
       const index = container.querySelectorAll('textarea').length;
@@ -388,7 +413,7 @@
       });
     });
 
-    // Lukisan tandatangan pada kanvas
+    // Lukis tandatangan pada kanvas
     const canvas = document.getElementById('signatureCanvas');
     const ctx = canvas.getContext('2d');
     ctx.lineWidth = 2;
@@ -421,6 +446,7 @@
     canvas.addEventListener('touchend', endDrawing);
     canvas.addEventListener('touchmove', draw);
 
+    // Clear canvas
     document.getElementById('clearCanvasBtn').addEventListener('click', () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       updatePreview();
@@ -491,7 +517,7 @@
       updatePreview();
     });
 
-    // Butang Muat Turun PDF – generate PDF bersaiz A4
+    // Butang Muat Turun PDF – Generate PDF bersaiz A4
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const letterElement = document.getElementById('letterPreview');
       if (!letterElement) {
@@ -510,7 +536,6 @@
         .catch(err => { console.error("Ralat ketika menjana PDF:", err); });
     });
 
-    // Panggil updatePreview() sekali untuk paparan awal
     updatePreview();
   </script>
 </body>
