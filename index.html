@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <title>Penjanaan Surat Perletakan Jawatan</title>
+
+  <!-- html2pdf.js (untuk generate PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
+          integrity="sha512-YcsIpTFRc0tHEgYpP+TUPn6yYP0T7Dcv/xD7Hih5oOH0S8Q+F0Mr2ygZ+Kp+S0zMfX7WQbhBsD6K0yZ0JULH7Q=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"></script>
+</head>
+<body class="bg-gray-100 p-4">
+
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-md shadow-md">
+    <h1 class="text-2xl font-bold mb-4">Sistem Penjanaan Surat</h1>
+
+    <!-- Pilihan Bahasa -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-2">Pilih Bahasa / Choose Language:</label>
+      <select id="languageSelect" class="border rounded p-2 w-full">
+        <option value="my">Bahasa Melayu</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <!-- Borang Input Maklumat -->
+    <form id="letterForm" class="space-y-4">
+      <div>
+        <label class="block font-semibold">Nama Pekerja:</label>
+        <input type="text" id="namaPekerja" class="border rounded p-2 w-full" placeholder="Contoh: Ali bin Abu" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Jawatan Pekerja:</label>
+        <input type="text" id="jawatanPekerja" class="border rounded p-2 w-full" placeholder="Contoh: Eksekutif IT" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Jabatan/Department Pekerja:</label>
+        <input type="text" id="jabatanPekerja" class="border rounded p-2 w-full" placeholder="Contoh: Jabatan IT" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Nama Syarikat (Pekerja):</label>
+        <input type="text" id="namaSyarikatPekerja" class="border rounded p-2 w-full" placeholder="Contoh: Syarikat Maju Sdn. Bhd." required />
+      </div>
+      <div>
+        <label class="block font-semibold">Alamat (Pekerja):</label>
+        <input type="text" id="alamatPekerja" class="border rounded p-2 w-full" placeholder="Contoh: No. 123, Jalan ABC" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Bandar (Pekerja):</label>
+        <input type="text" id="bandarPekerja" class="border rounded p-2 w-full" placeholder="Contoh: Kuala Lumpur" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Negeri (Pekerja):</label>
+        <input type="text" id="negeriPekerja" class="border rounded p-2 w-full" placeholder="Contoh: Wilayah Persekutuan" required />
+      </div>
+      <hr class="my-4" />
+      <div>
+        <label class="block font-semibold">Nama Penerima:</label>
+        <input type="text" id="namaPenerima" class="border rounded p-2 w-full" placeholder="Contoh: Encik Ahmad bin Ali" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Jawatan Penerima:</label>
+        <input type="text" id="jawatanPenerima" class="border rounded p-2 w-full" placeholder="Contoh: Pengurus Sumber Manusia" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Nama Syarikat (Penerima):</label>
+        <input type="text" id="namaSyarikatPenerima" class="border rounded p-2 w-full" placeholder="Contoh: Syarikat Maju Sdn. Bhd." required />
+      </div>
+      <div>
+        <label class="block font-semibold">Alamat (Penerima):</label>
+        <input type="text" id="alamatPenerima" class="border rounded p-2 w-full" placeholder="Contoh: No. 456, Jalan XYZ" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Bandar (Penerima):</label>
+        <input type="text" id="bandarPenerima" class="border rounded p-2 w-full" placeholder="Contoh: Shah Alam" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Negeri (Penerima):</label>
+        <input type="text" id="negeriPenerima" class="border rounded p-2 w-full" placeholder="Contoh: Selangor" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Tarikh Surat:</label>
+        <input type="date" id="tarikh" class="border rounded p-2 w-full" required />
+      </div>
+      <button type="button" onclick="generateLetter()"
+              class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        Jana Surat
+      </button>
+    </form>
+  </div>
+
+  <!-- Paparan Surat (akan diisi melalui JS) -->
+  <div id="letterOutput" class="max-w-4xl mx-auto bg-white p-6 rounded-md shadow-md mt-6 hidden">
+    <div id="letterContent" class="text-sm leading-relaxed text-gray-900">
+      <!-- Kandungan surat akan diisi secara dinamik di sini -->
+    </div>
+
+    <div class="mt-4">
+      <button onclick="generatePDF()"
+              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+        Muat Turun PDF
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Teks surat dalam bahasa Melayu
+    const suratMY = `
+    <p class="mb-4">
+      <span class="block font-bold">[Nama Pekerja]</span>
+      [Jawatan Pekerja]<br/>
+      [Nama Syarikat (Pekerja)]<br/>
+      [Alamat Pekerja], [Bandar Pekerja], [Negeri Pekerja]
+    </p>
+
+    <p class="mb-4">
+      <span class="block font-bold">[Nama Penerima]</span>
+      [Jawatan Penerima]<br/>
+      [Nama Syarikat (Penerima)]<br/>
+      [Alamat Penerima], [Bandar Penerima], [Negeri Penerima]
+    </p>
+
+    <p class="text-right">[Tarikh]</p>
+
+    <h2 class="font-bold text-lg my-4">NOTIS PERLETAKAN JAWATAN</h2>
+
+    <p>
+      Merujuk kepada perkara di atas, saya <strong>[Nama Pekerja]</strong>, 
+      <strong>[Jawatan Pekerja]</strong> dari <strong>[Jabatan Pekerja]</strong> dengan hormatnya ingin memaklumkan 
+      perletakan jawatan saya dari <strong>[Nama Syarikat (Pekerja)]</strong>. Tarikh akhir perkhidmatan saya adalah pada <strong>[Tarikh]</strong>.
+    </p>
+
+    <p class="mt-2">
+      2. Saya ingin memaklumkan bahawa saya telah membuat keputusan untuk meletak jawatan tersebut.
+    </p>
+
+    <p class="mt-2">
+      3. Saya juga ingin merakamkan penghargaan atas segala kerjasama dan tunjuk ajar yang telah diberikan sepanjang saya berkhidmat di syarikat ini.
+    </p>
+
+    <p class="mt-4">
+      Sekian, terima kasih.
+    </p>
+
+    <p class="mt-4">
+      Yang benar,<br/>
+      <br/>
+      <strong>[Nama Pekerja]</strong>
+    </p>
+    `;
+
+    // Teks surat dalam bahasa Inggeris
+    const suratEN = `
+    <p class="mb-4">
+      <span class="block font-bold">[Employee Name]</span>
+      [Employee Position]<br/>
+      [Employee Company]<br/>
+      [Employee Address], [Employee City], [Employee State]
+    </p>
+
+    <p class="mb-4">
+      <span class="block font-bold">[Recipient Name]</span>
+      [Recipient Position]<br/>
+      [Recipient Company]<br/>
+      [Recipient Address], [Recipient City], [Recipient State]
+    </p>
+
+    <p class="text-right">[Date]</p>
+
+    <h2 class="font-bold text-lg my-4">NOTICE OF RESIGNATION</h2>
+
+    <p>
+      With reference to the above matter, I, <strong>[Employee Name]</strong>, 
+      <strong>[Employee Position]</strong> from <strong>[Employee Department]</strong>, would like to formally 
+      announce my resignation from <strong>[Employee Company]</strong>. My last day of service will be on <strong>[Date]</strong>.
+    </p>
+
+    <p class="mt-2">
+      2. I would like to inform you that I have decided to resign from the aforementioned position.
+    </p>
+
+    <p class="mt-2">
+      3. I would also like to express my appreciation for all the cooperation and guidance provided throughout my tenure at this company.
+    </p>
+
+    <p class="mt-4">
+      Thank you.
+    </p>
+
+    <p class="mt-4">
+      Yours sincerely,<br/>
+      <br/>
+      <strong>[Employee Name]</strong>
+    </p>
+    `;
+
+    function generateLetter() {
+      // Ambil nilai dari borang
+      const namaPekerja = document.getElementById('namaPekerja').value;
+      const jawatanPekerja = document.getElementById('jawatanPekerja').value;
+      const jabatanPekerja = document.getElementById('jabatanPekerja').value;
+      const namaSyarikatPekerja = document.getElementById('namaSyarikatPekerja').value;
+      const alamatPekerja = document.getElementById('alamatPekerja').value;
+      const bandarPekerja = document.getElementById('bandarPekerja').value;
+      const negeriPekerja = document.getElementById('negeriPekerja').value;
+
+      const namaPenerima = document.getElementById('namaPenerima').value;
+      const jawatanPenerima = document.getElementById('jawatanPenerima').value;
+      const namaSyarikatPenerima = document.getElementById('namaSyarikatPenerima').value;
+      const alamatPenerima = document.getElementById('alamatPenerima').value;
+      const bandarPenerima = document.getElementById('bandarPenerima').value;
+      const negeriPenerima = document.getElementById('negeriPenerima').value;
+
+      const tarikh = document.getElementById('tarikh').value; // format: YYYY-MM-DD
+
+      // Pilih bahasa
+      const language = document.getElementById('languageSelect').value;
+      let templateSurat = (language === 'my') ? suratMY : suratEN;
+
+      // Format tarikh ke bentuk lebih sesuai (cth: 7 Januari 2025) jika bahasa MY
+      // atau (January 7, 2025) jika bahasa EN -- contoh ringkas di bawah:
+      const dateObj = new Date(tarikh);
+      const optionsMY = { day: 'numeric', month: 'long', year: 'numeric' };
+      const optionsEN = { day: 'numeric', month: 'long', year: 'numeric' };
+
+      let formattedDate = '';
+      if (language === 'my') {
+        formattedDate = dateObj.toLocaleDateString('ms-MY', optionsMY);
+      } else {
+        formattedDate = dateObj.toLocaleDateString('en-GB', optionsEN);
+      }
+
+      // Gantikan placeholder
+      templateSurat = templateSurat
+        .replace('[Nama Pekerja]', namaPekerja)
+        .replace('[Jawatan Pekerja]', jawatanPekerja)
+        .replace('[Jabatan Pekerja]', jabatanPekerja)
+        .replace('[Nama Syarikat (Pekerja)]', namaSyarikatPekerja)
+        .replace('[Alamat Pekerja]', alamatPekerja)
+        .replace('[Bandar Pekerja]', bandarPekerja)
+        .replace('[Negeri Pekerja]', negeriPekerja)
+
+        .replace('[Nama Penerima]', namaPenerima)
+        .replace('[Jawatan Penerima]', jawatanPenerima)
+        .replace('[Nama Syarikat (Penerima)]', namaSyarikatPenerima)
+        .replace('[Alamat Penerima]', alamatPenerima)
+        .replace('[Bandar Penerima]', bandarPenerima)
+        .replace('[Negeri Penerima]', negeriPenerima)
+
+        .replace('[Tarikh]', formattedDate)
+
+        // Untuk versi English
+        .replace('[Employee Name]', namaPekerja)
+        .replace('[Employee Position]', jawatanPekerja)
+        .replace('[Employee Department]', jabatanPekerja)
+        .replace('[Employee Company]', namaSyarikatPekerja)
+        .replace('[Employee Address]', alamatPekerja)
+        .replace('[Employee City]', bandarPekerja)
+        .replace('[Employee State]', negeriPekerja)
+
+        .replace('[Recipient Name]', namaPenerima)
+        .replace('[Recipient Position]', jawatanPenerima)
+        .replace('[Recipient Company]', namaSyarikatPenerima)
+        .replace('[Recipient Address]', alamatPenerima)
+        .replace('[Recipient City]', bandarPenerima)
+        .replace('[Recipient State]', negeriPenerima)
+        .replace('[Date]', formattedDate);
+
+      // Masukkan ke dalam letterContent
+      const letterContent = document.getElementById('letterContent');
+      letterContent.innerHTML = templateSurat;
+
+      // Tunjukkan surat
+      document.getElementById('letterOutput').classList.remove('hidden');
+    }
+
+    function generatePDF() {
+      const element = document.getElementById('letterContent');
+      const opt = {
+        margin:       0.5,
+        filename:     'Surat-Perletakan-Jawatan.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().from(element).set(opt).save();
+    }
+  </script>
+</body>
+</html>
