@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Penjanaan Surat Perletakan Jawatan</title>
   <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Google Font untuk tandatangan teks -->
+  <!-- Google Font for signature -->
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-  <title>Sistem Penjanaan Surat Perletakan Jawatan</title>
-  <!-- html2pdf.js untuk penjanaan PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
-          integrity="sha512-YcsIpTFRc0tHEgYpP+TUPn6yYP0T7Dcv/xD7Hih5oOH0S8Q+F0Mr2ygZ+Kp+S0zMfX7WQbhBsD6K0yZ0JULH7Q=="
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"></script>
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" 
+          integrity="sha512-YcsIpTFRc0tHEgYpP+TUPn6yYP0T7Dcv/xD7Hih5oOH0S8Q+F0Mr2ygZ+Kp+S0zMfX7WQbhBsD6K0yZ0JULH7Q==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     /* Gaya untuk kanvas tandatangan */
     #signatureCanvas {
@@ -20,15 +19,22 @@
       background-color: #fff;
       touch-action: none;
     }
+    /* CSS untuk page break pada attachments dalam PDF */
+    @media print {
+      .page-break {
+        page-break-before: always;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-100 p-4">
+  <!-- Borang Input -->
   <div class="max-w-6xl mx-auto bg-white p-6 rounded-md shadow-md">
     <h1 class="text-2xl font-bold mb-4">Sistem Penjanaan Surat Perletakan Jawatan</h1>
-    <!-- Butang Clear All -->
+    <!-- Clear All Button -->
     <button id="clearAllBtn" class="mb-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Clear All</button>
     
-    <!-- SEKSYEN: Maklumat Pengirim -->
+    <!-- Maklumat Pengirim -->
     <div class="mb-6 border p-4 rounded">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-lg">Maklumat Pengirim</h2>
@@ -70,7 +76,7 @@
       </div>
     </div>
     
-    <!-- SEKSYEN: Maklumat Penerima -->
+    <!-- Maklumat Penerima -->
     <div class="mb-6 border p-4 rounded">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-lg">Maklumat Penerima</h2>
@@ -115,7 +121,7 @@
       </div>
     </div>
     
-    <!-- SEKSYEN: Maklumat Tarikh -->
+    <!-- Maklumat Tarikh -->
     <div class="mb-6 border p-4 rounded">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-lg">Maklumat Tarikh</h2>
@@ -133,14 +139,13 @@
       </div>
     </div>
     
-    <!-- SEKSYEN: Kandungan (Content) -->
+    <!-- Kandungan (Content) -->
     <div class="mb-6 border p-4 rounded">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-lg">Kandungan</h2>
         <button id="clearKandunganBtn" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm">Clear Content</button>
       </div>
       <div id="kandunganFields">
-        <!-- Kandungan 1 -->
         <div class="mb-2 flex items-start space-x-2">
           <textarea class="border rounded p-2 w-full" placeholder="Kandungan 1" data-index="0"></textarea>
           <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm hidden">X</button>
@@ -149,19 +154,16 @@
       <button id="addKandunganBtn" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded text-sm">Tambah Kandungan</button>
     </div>
     
-    <!-- SEKSYEN: Attachments -->
+    <!-- Attachments -->
     <div class="mb-6 border p-4 rounded">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-lg">Attachments</h2>
         <button id="clearAttachmentBtn" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm">Clear Attachments</button>
       </div>
       <input type="file" id="attachmentsInput" accept=".pdf,.png,.jpg,.jpeg" multiple class="border rounded p-2 w-full">
-      <div class="mt-2">
-        <ul id="attachmentsList" class="list-disc pl-5"></ul>
-      </div>
     </div>
     
-    <!-- SEKSYEN: Signature -->
+    <!-- Digital Signature -->
     <div class="mb-6 border p-4 rounded">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-lg">Digital Signature</h2>
@@ -190,7 +192,7 @@
       </div>
     </div>
     
-    <!-- Butang Muat Turun PDF -->
+    <!-- Muat Turun PDF -->
     <div class="mb-6">
       <button id="downloadBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
         Muat Turun PDF
@@ -198,34 +200,28 @@
     </div>
   </div>
   
-  <!-- PAPARAN SURAT (Preview) -->
+  <!-- Pratonton Surat -->
   <div class="max-w-6xl mx-auto bg-white p-6 rounded-md shadow-md mt-6">
     <h2 class="font-bold text-xl mb-4">Pratonton Surat</h2>
-    <div id="letterPreview" class="prose">
+    <div id="letterPreview">
       <!-- Maklumat Pengirim -->
       <div id="previewSender">
-        <p><strong>Pengirim:</strong></p>
         <p id="previewSenderName">[Nama Pekerja]</p>
         <p id="previewSenderJawatan">[Jawatan Pekerja]</p>
         <p id="previewSenderJabatan">[Jabatan Pekerja]</p>
         <p id="previewSenderSyarikat">[Nama Syarikat (Pengirim)]</p>
         <p id="previewSenderAlamat">[Alamat Pekerja], [Poskod Pengirim], [Bandar Pengirim], [Negeri Pengirim]</p>
       </div>
-      <hr>
-      <!-- Maklumat Penerima -->
+      <!-- Garis antara pengirim dan penerima -->
+      <hr class="border-t-2 border-black">
+      <!-- Maklumat Penerima dan Tarikh surat (tarikh diselaraskan di sebelah kanan) -->
       <div id="previewReceiver" class="mt-4">
-        <p><strong>Penerima:</strong></p>
         <p id="previewReceiverNama">[Gelaran Penerima] [Nama Penerima]</p>
         <p id="previewReceiverJawatan">[Jawatan Penerima]</p>
         <p id="previewReceiverSyarikat">[Nama Syarikat]</p>
         <p id="previewReceiverAlamat">[Alamat Syarikat], [Poskod Penerima], [Bandar Penerima], [Negeri Penerima]</p>
+        <p id="previewTarikhSurat" class="text-right">[Tarikh Surat]</p>
       </div>
-      <hr>
-      <!-- Maklumat Tarikh -->
-      <div id="previewTarikh" class="mt-4">
-        <p><strong>Tarikh Surat:</strong> <span id="previewTarikhSurat">[Tarikh Surat]</span></p>
-      </div>
-      <hr>
       <!-- Isi Surat -->
       <div id="previewLetterBody" class="mt-4">
         <p id="previewIsiSurat">
@@ -235,22 +231,25 @@
           <!-- Kandungan tambahan akan dipaparkan di sini -->
         </div>
       </div>
-      <hr>
       <!-- Signature -->
       <div id="previewSignature" class="mt-4">
-        <p><strong>Signature:</strong></p>
         <div id="signaturePreview"></div>
       </div>
-      <!-- Attachments -->
-      <div id="previewAttachments" class="mt-4">
-        <p><strong>Attachments:</strong></p>
-        <ul id="previewAttachmentsList" class="list-disc pl-5"></ul>
-      </div>
+    </div>
+    <!-- Attachments (dipaparkan pada halaman baru dalam PDF) -->
+    <div id="previewAttachments" class="page-break">
+      <div id="previewAttachmentsContent"></div>
     </div>
   </div>
   
   <script>
-    // Fungsi update preview surat
+    // Fungsi untuk memformat tarikh sebagai "12 Ogos 2025"
+    function formatDate(dateStr) {
+      if(!dateStr) return '';
+      const dateObj = new Date(dateStr);
+      return dateObj.toLocaleDateString('ms-MY', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    
     function updatePreview() {
       // Pengirim
       document.getElementById('previewSenderName').textContent = document.getElementById('senderNama').value || '[Nama Pekerja]';
@@ -275,22 +274,23 @@
       let receiverNegeri = document.getElementById('receiverNegeri').value || '[Negeri Penerima]';
       document.getElementById('previewReceiverAlamat').textContent = `${receiverAlamat}, ${receiverPoskod}, ${receiverBandar}, ${receiverNegeri}`;
       
-      // Tarikh
-      const tarikhSurat = document.getElementById('tarikhSurat').value;
-      document.getElementById('previewTarikhSurat').textContent = tarikhSurat || '[Tarikh Surat]';
+      // Tarikh surat
+      const tarikhSuratVal = document.getElementById('tarikhSurat').value;
+      document.getElementById('previewTarikhSurat').textContent = formatDate(tarikhSuratVal) || '[Tarikh Surat]';
       
-      // Isi Surat
+      // Isi surat
       let senderNama = document.getElementById('senderNama').value || '[Nama Pekerja]';
       let senderJawatan = document.getElementById('senderJawatan').value || '[Jawatan Pekerja]';
       let senderJabatan = document.getElementById('senderJabatan').value || '[Jabatan Pekerja]';
       let senderSyarikat = document.getElementById('senderSyarikat').value || '[Nama Syarikat (Pengirim)]';
-      const tarikhAkhir = document.getElementById('tarikhAkhir').value || '[Tarikh Akhir Bekerja]';
-      document.getElementById('previewIsiSurat').textContent = `${senderNama}, ${senderJawatan} dari ${senderJabatan} dengan hormatnya ingin memaklumkan perletakan jawatan saya dari ${senderSyarikat}. Tarikh akhir perkhidmatan saya adalah pada ${tarikhAkhir}.`;
+      const tarikhAkhirVal = document.getElementById('tarikhAkhir').value;
+      const formattedTarikhAkhir = formatDate(tarikhAkhirVal) || '[Tarikh Akhir Bekerja]';
+      document.getElementById('previewIsiSurat').textContent = `${senderNama}, ${senderJawatan} dari ${senderJabatan} dengan hormatnya ingin memaklumkan perletakan jawatan saya dari ${senderSyarikat}. Tarikh akhir perkhidmatan saya adalah pada ${formattedTarikhAkhir}.`;
       
-      // Kandungan: Paparkan semua textarea kandungan yang ada
+      // Kandungan
       const kandunganContainer = document.getElementById('previewKandungan');
       kandunganContainer.innerHTML = '';
-      document.querySelectorAll('#kandunganFields textarea').forEach((ta, index) => {
+      document.querySelectorAll('#kandunganFields textarea').forEach((ta) => {
         if(ta.value.trim()){
           const p = document.createElement('p');
           p.textContent = ta.value;
@@ -313,20 +313,30 @@
         }
       }
       
-      // Attachments: Senaraikan nama fail
+      // Attachments: Paparkan imej jika fail jenis gambar, dan paparkan pada div dengan page-break
       const attachmentsInput = document.getElementById('attachmentsInput');
-      const previewAttachmentsList = document.getElementById('previewAttachmentsList');
-      previewAttachmentsList.innerHTML = '';
+      const previewAttachmentsContent = document.getElementById('previewAttachmentsContent');
+      previewAttachmentsContent.innerHTML = '';
       if(attachmentsInput.files.length > 0){
         Array.from(attachmentsInput.files).forEach(file => {
-          const li = document.createElement('li');
-          li.textContent = file.name;
-          previewAttachmentsList.appendChild(li);
+          if(file.type.startsWith('image/')){
+            const reader = new FileReader();
+            reader.onload = function(e){
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = "max-w-full mb-4";
+              previewAttachmentsContent.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+          } else {
+            const p = document.createElement('p');
+            p.textContent = file.name;
+            previewAttachmentsContent.appendChild(p);
+          }
         });
       }
     }
     
-    // Semak jika kanvas kosong
     function isCanvasBlank(canvas) {
       const blank = document.createElement('canvas');
       blank.width = canvas.width;
@@ -334,13 +344,12 @@
       return canvas.toDataURL() === blank.toDataURL();
     }
     
-    // Tambah event listeners pada input
     document.querySelectorAll('input, textarea, select').forEach(el => {
       el.addEventListener('input', updatePreview);
       el.addEventListener('change', updatePreview);
     });
     
-    // Pengendalian untuk Kandungan (Content)
+    // Pengurusan Kandungan
     document.getElementById('addKandunganBtn').addEventListener('click', () => {
       const container = document.getElementById('kandunganFields');
       const index = container.querySelectorAll('textarea').length;
@@ -349,15 +358,15 @@
       div.innerHTML = `<textarea class="border rounded p-2 w-full" placeholder="Kandungan ${index+1}" data-index="${index}"></textarea>
                        <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm">X</button>`;
       container.appendChild(div);
-      // Attach event listener pada textarea dan delete button
       div.querySelector('textarea').addEventListener('input', updatePreview);
       div.querySelector('.deleteKandungan').addEventListener('click', function(){
         div.remove();
         updatePreview();
+        toggleDeleteButtons();
       });
+      toggleDeleteButtons();
     });
     
-    // Untuk paparan delete button hanya muncul untuk kandungan > 1
     function toggleDeleteButtons() {
       const allDeleteBtns = document.querySelectorAll('.deleteKandungan');
       allDeleteBtns.forEach(btn => {
@@ -368,10 +377,8 @@
         }
       });
     }
-    document.getElementById('addKandunganBtn').addEventListener('click', toggleDeleteButtons);
-    toggleDeleteButtons();
     
-    // Pengendalian untuk signature pilihan radio
+    // Pengurusan pilihan Signature
     document.querySelectorAll('input[name="signatureOption"]').forEach(radio => {
       radio.addEventListener('change', () => {
         if(radio.value === 'text'){
@@ -418,13 +425,12 @@
     canvas.addEventListener('touchend', endDrawing);
     canvas.addEventListener('touchmove', draw);
     
-    // Butang Clear untuk Canvas
     document.getElementById('clearCanvasBtn').addEventListener('click', () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       updatePreview();
     });
     
-    // Pengendalian untuk Clear Section buttons
+    // Butang Clear Section untuk setiap bahagian
     document.getElementById('clearPengirimBtn').addEventListener('click', () => {
       document.getElementById('senderNama').value = '';
       document.getElementById('senderJawatan').value = '';
@@ -469,29 +475,23 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       updatePreview();
     });
-    
-    // Global Clear All
     document.getElementById('clearAllBtn').addEventListener('click', () => {
       document.querySelectorAll('input, textarea, select').forEach(el => {
         if(el.type === 'radio' || el.type === 'checkbox') return;
         el.value = '';
       });
-      // Reset kandungan section
       document.getElementById('kandunganFields').innerHTML = `<div class="mb-2 flex items-start space-x-2">
           <textarea class="border rounded p-2 w-full" placeholder="Kandungan 1" data-index="0"></textarea>
           <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm hidden">X</button>
         </div>`;
       toggleDeleteButtons();
-      // Reset radio untuk signature
       document.querySelector('input[name="signatureOption"][value="text"]').checked = true;
       document.getElementById('signatureTextContainer').classList.remove('hidden');
       document.getElementById('signatureDrawContainer').classList.add('hidden');
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       updatePreview();
     });
     
-    // Butang Muat Turun PDF
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const opt = {
         margin: 0.5,
@@ -503,7 +503,6 @@
       html2pdf().from(document.getElementById('letterPreview')).set(opt).save();
     });
     
-    // Panggil updatePreview pada permulaan
     updatePreview();
   </script>
 </body>
