@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistem Penjanaan Surat Perletakan Jawatan</title>
   <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Google Font untuk tandatangan teks -->
+  <!-- Google Fonts: Autograf untuk tandatangan input text dan Great Vibes (jika perlu) -->
+  <link href="https://fonts.googleapis.com/css2?family=Autograf&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-  <!-- html2pdf.js -->
+  <!-- html2pdf.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" 
           integrity="sha512-YcsIpTFRc0tHEgYpP+TUPn6yYP0T7Dcv/xD7Hih5oOH0S8Q+F0Mr2ygZ+Kp+S0zMfX7WQbhBsD6K0yZ0JULH7Q==" 
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -54,8 +55,9 @@
           <input type="text" id="senderJabatan" placeholder="Contoh: Jabatan Teknologi Maklumat" class="border rounded p-2 w-full">
         </div>
         <div>
+          <!-- Jika tiada, biarkan kosong -->
           <label class="block font-semibold">Nama Syarikat (Pengirim)*</label>
-          <input type="text" id="senderSyarikat" placeholder="Contoh: Syarikat XYZ Sdn. Bhd." class="border rounded p-2 w-full">
+          <input type="text" id="senderSyarikat" placeholder="Contoh: Syarikat XYZ Sdn. Bhd. (kosongkan jika tiada)" class="border rounded p-2 w-full">
         </div>
         <div>
           <label class="block font-semibold">Alamat Pekerja*</label>
@@ -95,12 +97,14 @@
           <input type="text" id="receiverGelaranLain" placeholder="Sila masukkan" class="border rounded p-2 w-full mt-2 hidden">
         </div>
         <div>
+          <!-- Jika tiada nama, paparkan "Kepada Yang Berkenaan" -->
           <label class="block font-semibold">Nama Penerima*</label>
-          <input type="text" id="receiverNama" placeholder="Contoh: Guru Bertugas" class="border rounded p-2 w-full">
+          <input type="text" id="receiverNama" placeholder="Contoh: Guru Bertugas (kosongkan untuk 'Kepada Yang Berkenaan')" class="border rounded p-2 w-full">
         </div>
         <div>
+          <!-- Jika tiada jawatan, paparkan "Tiada" -->
           <label class="block font-semibold">Jawatan Penerima*</label>
-          <input type="text" id="receiverJawatan" placeholder="Contoh: Jabatan Sumber Manusia" class="border rounded p-2 w-full">
+          <input type="text" id="receiverJawatan" placeholder="Contoh: Jabatan Sumber Manusia (kosongkan jika tiada)" class="border rounded p-2 w-full">
         </div>
         <div>
           <label class="block font-semibold">Nama Syarikat*</label>
@@ -183,10 +187,10 @@
           <span class="ml-2">Lukis Tandatangan</span>
         </label>
       </div>
-      <!-- Signature Teks -->
+      <!-- Signature Teks dengan font Autograf -->
       <div id="signatureTextContainer" class="mb-2">
         <label class="block font-semibold">Masukkan Tandatangan (Teks):</label>
-        <input type="text" id="signatureText" placeholder="cth: Aidel" class="border rounded p-2 w-full">
+        <input type="text" id="signatureText" placeholder="cth: Aidel" class="border rounded p-2 w-full" style="font-family: 'Autograf', cursive;">
       </div>
       <!-- Signature Lukis -->
       <div id="signatureDrawContainer" class="mb-2 hidden">
@@ -196,7 +200,7 @@
       </div>
     </div>
     
-    <!-- Muat Turun PDF -->
+    <!-- Butang Muat Turun PDF -->
     <div class="mb-6">
       <button id="downloadBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
         Muat Turun PDF
@@ -215,25 +219,26 @@
         <p id="previewSenderJabatan">[Jabatan Pekerja]</p>
         <p id="previewSenderSyarikat">[Nama Syarikat (Pengirim)]</p>
         <p id="previewSenderAlamat">
-          [Alamat Pekerja]<br>
-          [Poskod Pengirim]<br>
-          [Bandar Pengirim]<br>
-          [Negeri Pengirim]
+          <!-- Setiap baris alamat diakhiri dengan koma, kecuali negeri dengan noktah -->
+          [Alamat Pekerja],<br>
+          [Poskod Pengirim],<br>
+          [Bandar Pengirim],<br>
+          [Negeri Pengirim].
         </p>
       </div>
       <!-- Garis pembatas antara Pengirim dan Penerima -->
       <hr class="border-t-2 border-black my-4">
-      <!-- Maklumat Penerima & Tarikh Surat (diletakkan dalam flex supaya Tarikh Surat berada di sebelah kanan) -->
+      <!-- Maklumat Penerima & Tarikh Surat -->
       <div id="previewReceiver" class="flex justify-between items-end">
         <div>
           <p id="previewReceiverNama">[Gelaran Penerima] [Nama Penerima]</p>
           <p id="previewReceiverJawatan">[Jawatan Penerima]</p>
           <p id="previewReceiverSyarikat">[Nama Syarikat]</p>
           <p id="previewReceiverAlamat">
-            [Alamat Syarikat]<br>
-            [Poskod Penerima]<br>
-            [Bandar Penerima]<br>
-            [Negeri Penerima]
+            [Alamat Syarikat],<br>
+            [Poskod Penerima],<br>
+            [Bandar Penerima],<br>
+            [Negeri Penerima].
           </p>
         </div>
         <div>
@@ -245,312 +250,330 @@
         <p id="previewIsiSurat">
           [Nama Pekerja], [Jawatan Pekerja] dari [Jabatan Pekerja] dengan hormatnya ingin memaklumkan perletakan jawatan saya dari [Nama Syarikat (Pengirim)]. Tarikh akhir perkhidmatan saya adalah pada [Tarikh Akhir Bekerja].
         </p>
+        <!-- Kandungan tambahan dengan spacing antara perenggan -->
         <div id="previewKandungan">
-          <!-- Kandungan tambahan akan dipaparkan di sini dengan numbering bermula dari 2 -->
+          <!-- Perenggan tambahan akan dipaparkan di sini dengan numbering bermula dari 2 -->
         </div>
       </div>
-      <!-- Signature -->
+      <!-- Tandatangan dan "Yang benar," -->
       <div id="previewSignature" class="mt-4">
         <div id="signaturePreview"></div>
+        <p class="mt-4">Yang benar,<br><span id="signatureNamePreview">[Nama Pekerja]</span></p>
       </div>
     </div>
-    <!-- Attachments (akan dipaparkan pada halaman baru dalam PDF) -->
+    <!-- Attachments (dipaparkan pada halaman baru dalam PDF) -->
     <div id="previewAttachments" class="page-break mt-4">
       <div id="previewAttachmentsContent"></div>
     </div>
   </div>
   
   <script>
-    // Fungsi untuk memformat tarikh sebagai "12 Ogos 2025"
-    function formatDate(dateStr) {
-      if(!dateStr) return '';
-      const dateObj = new Date(dateStr);
-      return dateObj.toLocaleDateString('ms-MY', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-    
-    function updatePreview() {
-      // Pengirim
-      document.getElementById('previewSenderName').textContent = document.getElementById('senderNama').value || '[Nama Pekerja]';
-      document.getElementById('previewSenderJawatan').textContent = document.getElementById('senderJawatan').value || '[Jawatan Pekerja]';
-      document.getElementById('previewSenderJabatan').textContent = document.getElementById('senderJabatan').value || '[Jabatan Pekerja]';
-      document.getElementById('previewSenderSyarikat').textContent = document.getElementById('senderSyarikat').value || '[Nama Syarikat (Pengirim)]';
-      let senderAlamat = document.getElementById('senderAlamat').value || '[Alamat Pekerja]';
-      let senderPoskod = document.getElementById('senderPoskod').value || '[Poskod Pengirim]';
-      let senderBandar = document.getElementById('senderBandar').value || '[Bandar Pengirim]';
-      let senderNegeri = document.getElementById('senderNegeri').value || '[Negeri Pengirim]';
-      document.getElementById('previewSenderAlamat').innerHTML = `${senderAlamat}<br>${senderPoskod}<br>${senderBandar}<br>${senderNegeri}`;
-      
-      // Penerima
-      let gelaran = document.getElementById('receiverGelaran').value;
-      if(gelaran === "lain-lain") {
-        const lainText = document.getElementById('receiverGelaranLain').value;
-        gelaran = lainText ? lainText : '';
-      } else if(gelaran === "Tiada") {
-        gelaran = "";
+    window.addEventListener('DOMContentLoaded', function() {
+      // Fungsi untuk memformat tarikh sebagai "12 Ogos 2025"
+      function formatDate(dateStr) {
+        if(!dateStr) return '';
+        const dateObj = new Date(dateStr);
+        return dateObj.toLocaleDateString('ms-MY', { day: 'numeric', month: 'long', year: 'numeric' });
       }
-      let receiverNama = document.getElementById('receiverNama').value || '[Nama Penerima]';
-      document.getElementById('previewReceiverNama').textContent = gelaran ? `${gelaran} ${receiverNama}` : receiverNama;
-      document.getElementById('previewReceiverJawatan').textContent = document.getElementById('receiverJawatan').value || '[Jawatan Penerima]';
-      document.getElementById('previewReceiverSyarikat').textContent = document.getElementById('receiverSyarikat').value || '[Nama Syarikat]';
-      let receiverAlamat = document.getElementById('receiverAlamat').value || '[Alamat Syarikat]';
-      let receiverPoskod = document.getElementById('receiverPoskod').value || '[Poskod Penerima]';
-      let receiverBandar = document.getElementById('receiverBandar').value || '[Bandar Penerima]';
-      let receiverNegeri = document.getElementById('receiverNegeri').value || '[Negeri Penerima]';
-      document.getElementById('previewReceiverAlamat').innerHTML = `${receiverAlamat}<br>${receiverPoskod}<br>${receiverBandar}<br>${receiverNegeri}`;
       
-      // Tarikh surat
-      const tarikhSuratVal = document.getElementById('tarikhSurat').value;
-      document.getElementById('previewTarikhSurat').textContent = formatDate(tarikhSuratVal) || '[Tarikh Surat]';
-      
-      // Isi surat
-      let senderNama = document.getElementById('senderNama').value || '[Nama Pekerja]';
-      let senderJawatan = document.getElementById('senderJawatan').value || '[Jawatan Pekerja]';
-      let senderJabatan = document.getElementById('senderJabatan').value || '[Jabatan Pekerja]';
-      let senderSyarikat = document.getElementById('senderSyarikat').value || '[Nama Syarikat (Pengirim)]';
-      const tarikhAkhirVal = document.getElementById('tarikhAkhir').value;
-      const formattedTarikhAkhir = formatDate(tarikhAkhirVal) || '[Tarikh Akhir Bekerja]';
-      document.getElementById('previewIsiSurat').textContent = `${senderNama}, ${senderJawatan} dari ${senderJabatan} dengan hormatnya ingin memaklumkan perletakan jawatan saya dari ${senderSyarikat}. Tarikh akhir perkhidmatan saya adalah pada ${formattedTarikhAkhir}.`;
-      
-      // Kandungan tambahan: Mulakan numbering dari 2
-      const kandunganContainer = document.getElementById('previewKandungan');
-      kandunganContainer.innerHTML = '';
-      let num = 2;
-      document.querySelectorAll('#kandunganFields textarea').forEach((ta) => {
-        if(ta.value.trim()){
-          const p = document.createElement('p');
-          p.textContent = `${num}. ${ta.value}`;
-          kandunganContainer.appendChild(p);
-          num++;
+      function updatePreview() {
+        // Pengirim
+        const senderNama = document.getElementById('senderNama').value || '[Nama Pekerja]';
+        document.getElementById('previewSenderName').textContent = senderNama;
+        document.getElementById('previewSenderJawatan').textContent = document.getElementById('senderJawatan').value || '[Jawatan Pekerja]';
+        document.getElementById('previewSenderJabatan').textContent = document.getElementById('senderJabatan').value || '[Jabatan Pekerja]';
+        let senderSyarikat = document.getElementById('senderSyarikat').value;
+        if (!senderSyarikat.trim()) { senderSyarikat = "Tiada"; }
+        document.getElementById('previewSenderSyarikat').textContent = senderSyarikat;
+        
+        let senderAlamat = document.getElementById('senderAlamat').value || '[Alamat Pekerja]';
+        let senderPoskod = document.getElementById('senderPoskod').value || '[Poskod Pengirim]';
+        let senderBandar = document.getElementById('senderBandar').value || '[Bandar Pengirim]';
+        let senderNegeri = document.getElementById('senderNegeri').value || '[Negeri Pengirim]';
+        // Gabungkan dengan koma dan noktah di akhir baris terakhir
+        const senderAddr = senderAlamat + ",<br>" + senderPoskod + ",<br>" + senderBandar + ",<br>" + senderNegeri + ".";
+        document.getElementById('previewSenderAlamat').innerHTML = senderAddr;
+        
+        // Penerima
+        let gelaran = document.getElementById('receiverGelaran').value;
+        if(gelaran === "lain-lain") {
+          const lainText = document.getElementById('receiverGelaranLain').value;
+          gelaran = lainText ? lainText : '';
+        } else if(gelaran === "Tiada") {
+          gelaran = "";
         }
+        let receiverNama = document.getElementById('receiverNama').value;
+        if (!receiverNama.trim()) { receiverNama = "Kepada Yang Berkenaan"; }
+        document.getElementById('previewReceiverNama').textContent = gelaran ? `${gelaran} ${receiverNama}` : receiverNama;
+        
+        let receiverJawatan = document.getElementById('receiverJawatan').value;
+        if (!receiverJawatan.trim()) { receiverJawatan = "Tiada"; }
+        document.getElementById('previewReceiverJawatan').textContent = receiverJawatan;
+        document.getElementById('previewReceiverSyarikat').textContent = document.getElementById('receiverSyarikat').value || '[Nama Syarikat]';
+        
+        let receiverAlamat = document.getElementById('receiverAlamat').value || '[Alamat Syarikat]';
+        let receiverPoskod = document.getElementById('receiverPoskod').value || '[Poskod Penerima]';
+        let receiverBandar = document.getElementById('receiverBandar').value || '[Bandar Penerima]';
+        let receiverNegeri = document.getElementById('receiverNegeri').value || '[Negeri Penerima]';
+        const receiverAddr = receiverAlamat + ",<br>" + receiverPoskod + ",<br>" + receiverBandar + ",<br>" + receiverNegeri + ".";
+        document.getElementById('previewReceiverAlamat').innerHTML = receiverAddr;
+        
+        // Tarikh surat
+        const tarikhSuratVal = document.getElementById('tarikhSurat').value;
+        document.getElementById('previewTarikhSurat').textContent = formatDate(tarikhSuratVal) || '[Tarikh Surat]';
+        
+        // Isi surat
+        const isiSurat = `${senderNama}, ${document.getElementById('senderJawatan').value || '[Jawatan Pekerja]'} dari ${document.getElementById('senderJabatan').value || '[Jabatan Pekerja]'} dengan hormatnya ingin memaklumkan perletakan jawatan saya dari ${senderSyarikat}. Tarikh akhir perkhidmatan saya adalah pada ${formatDate(document.getElementById('tarikhAkhir').value) || '[Tarikh Akhir Bekerja]'}.`;
+        document.getElementById('previewIsiSurat').textContent = isiSurat;
+        
+        // Kandungan tambahan: Setiap perenggan baru dengan spacing dan numbering bermula dari 2
+        const kandunganContainer = document.getElementById('previewKandungan');
+        kandunganContainer.innerHTML = '';
+        let num = 2;
+        document.querySelectorAll('#kandunganFields textarea').forEach((ta) => {
+          if(ta.value.trim()){
+            const p = document.createElement('p');
+            p.className = "mt-4";
+            p.textContent = `${num}. ${ta.value}`;
+            kandunganContainer.appendChild(p);
+            num++;
+          }
+        });
+        
+        // Signature
+        const selectedSig = document.querySelector('input[name="signatureOption"]:checked').value;
+        const signaturePreview = document.getElementById('signaturePreview');
+        let sigHTML = "";
+        if(selectedSig === 'text'){
+          const sigText = document.getElementById('signatureText').value;
+          if(sigText.trim()){
+            sigHTML = `<span style="font-family: 'Autograf', cursive; font-size: 32px;">${sigText}</span>`;
+          }
+        } else if(selectedSig === 'draw'){
+          const canvas = document.getElementById('signatureCanvas');
+          if(!isCanvasBlank(canvas)){
+            sigHTML = `<img src="${canvas.toDataURL()}" alt="Signature" class="h-16">`;
+          }
+        }
+        // Tambah "Yang benar," dan Nama Pengirim selepas tandatangan
+        if(sigHTML){
+          sigHTML += `<br>Yang benar,<br>${senderNama}`;
+        }
+        signaturePreview.innerHTML = sigHTML;
+        
+        // Attachments: Paparkan imej jika jenis gambar
+        const attachmentsInput = document.getElementById('attachmentsInput');
+        const previewAttachmentsContent = document.getElementById('previewAttachmentsContent');
+        previewAttachmentsContent.innerHTML = '';
+        if(attachmentsInput.files.length > 0){
+          Array.from(attachmentsInput.files).forEach(file => {
+            if(file.type.startsWith('image/')){
+              const reader = new FileReader();
+              reader.onload = function(e){
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = "max-w-full mb-4";
+                previewAttachmentsContent.appendChild(img);
+              }
+              reader.readAsDataURL(file);
+            } else {
+              const p = document.createElement('p');
+              p.textContent = file.name;
+              previewAttachmentsContent.appendChild(p);
+            }
+          });
+        }
+      }
+      
+      function isCanvasBlank(canvas) {
+        const blank = document.createElement('canvas');
+        blank.width = canvas.width;
+        blank.height = canvas.height;
+        return canvas.toDataURL() === blank.toDataURL();
+      }
+      
+      // Event listeners pada semua input/textarea/select
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('input', updatePreview);
+        el.addEventListener('change', updatePreview);
       });
       
-      // Signature
-      const selectedSig = document.querySelector('input[name="signatureOption"]:checked').value;
-      const signaturePreview = document.getElementById('signaturePreview');
-      if(selectedSig === 'text'){
-        const sigText = document.getElementById('signatureText').value;
-        signaturePreview.innerHTML = sigText ? `<span style="font-family: 'Great Vibes', cursive; font-size: 32px;">${sigText}</span>` : '';
-      } else if(selectedSig === 'draw'){
-        const canvas = document.getElementById('signatureCanvas');
-        if(!isCanvasBlank(canvas)){
-          signaturePreview.innerHTML = `<img src="${canvas.toDataURL()}" alt="Signature" class="h-16">`;
+      // Pengurusan untuk Gelaran Penerima: Jika "lain-lain", paparkan input tambahan
+      document.getElementById('receiverGelaran').addEventListener('change', () => {
+        if(document.getElementById('receiverGelaran').value === "lain-lain"){
+          document.getElementById('receiverGelaranLain').classList.remove('hidden');
         } else {
-          signaturePreview.innerHTML = '';
+          document.getElementById('receiverGelaranLain').classList.add('hidden');
         }
-      }
+        updatePreview();
+      });
       
-      // Attachments: Paparkan imej jika jenis gambar
-      const attachmentsInput = document.getElementById('attachmentsInput');
-      const previewAttachmentsContent = document.getElementById('previewAttachmentsContent');
-      previewAttachmentsContent.innerHTML = '';
-      if(attachmentsInput.files.length > 0){
-        Array.from(attachmentsInput.files).forEach(file => {
-          if(file.type.startsWith('image/')){
-            const reader = new FileReader();
-            reader.onload = function(e){
-              const img = document.createElement('img');
-              img.src = e.target.result;
-              img.className = "max-w-full mb-4";
-              previewAttachmentsContent.appendChild(img);
-            }
-            reader.readAsDataURL(file);
+      // Pengurusan Kandungan
+      document.getElementById('addKandunganBtn').addEventListener('click', () => {
+        const container = document.getElementById('kandunganFields');
+        const index = container.querySelectorAll('textarea').length;
+        const div = document.createElement('div');
+        div.className = "mb-2 flex items-start space-x-2";
+        div.innerHTML = `<textarea class="border rounded p-2 w-full" placeholder="Kandungan ${index+1}" data-index="${index}"></textarea>
+                         <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm">X</button>`;
+        container.appendChild(div);
+        div.querySelector('textarea').addEventListener('input', updatePreview);
+        div.querySelector('.deleteKandungan').addEventListener('click', function(){
+          div.remove();
+          updatePreview();
+          toggleDeleteButtons();
+        });
+        toggleDeleteButtons();
+      });
+      
+      function toggleDeleteButtons() {
+        const allDeleteBtns = document.querySelectorAll('.deleteKandungan');
+        allDeleteBtns.forEach(btn => {
+          if(document.querySelectorAll('#kandunganFields textarea').length > 1){
+            btn.classList.remove('hidden');
           } else {
-            const p = document.createElement('p');
-            p.textContent = file.name;
-            previewAttachmentsContent.appendChild(p);
+            btn.classList.add('hidden');
           }
         });
       }
-    }
-    
-    function isCanvasBlank(canvas) {
-      const blank = document.createElement('canvas');
-      blank.width = canvas.width;
-      blank.height = canvas.height;
-      return canvas.toDataURL() === blank.toDataURL();
-    }
-    
-    // Event listeners pada semua input/textarea/select
-    document.querySelectorAll('input, textarea, select').forEach(el => {
-      el.addEventListener('input', updatePreview);
-      el.addEventListener('change', updatePreview);
-    });
-    
-    // Pengurusan untuk Gelaran Penerima: Jika "lain-lain", paparkan input tambahan
-    document.getElementById('receiverGelaran').addEventListener('change', () => {
-      if(document.getElementById('receiverGelaran').value === "lain-lain"){
-        document.getElementById('receiverGelaranLain').classList.remove('hidden');
-      } else {
+      
+      // Pengurusan pilihan Signature
+      document.querySelectorAll('input[name="signatureOption"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          if(radio.value === 'text'){
+            document.getElementById('signatureTextContainer').classList.remove('hidden');
+            document.getElementById('signatureDrawContainer').classList.add('hidden');
+          } else {
+            document.getElementById('signatureDrawContainer').classList.remove('hidden');
+            document.getElementById('signatureTextContainer').classList.add('hidden');
+          }
+          updatePreview();
+        });
+      });
+      
+      // Lukisan pada kanvas signature
+      const canvas = document.getElementById('signatureCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      let drawing = false;
+      function startDrawing(e) {
+        drawing = true;
+        draw(e);
+      }
+      function endDrawing() {
+        drawing = false;
+        ctx.beginPath();
+        updatePreview();
+      }
+      function draw(e) {
+        if(!drawing) return;
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        let x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        let y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mouseup', endDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchend', endDrawing);
+      canvas.addEventListener('touchmove', draw);
+      
+      document.getElementById('clearCanvasBtn').addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        updatePreview();
+      });
+      
+      // Butang Clear Section untuk setiap bahagian
+      document.getElementById('clearPengirimBtn').addEventListener('click', () => {
+        document.getElementById('senderNama').value = '';
+        document.getElementById('senderJawatan').value = '';
+        document.getElementById('senderJabatan').value = '';
+        document.getElementById('senderSyarikat').value = '';
+        document.getElementById('senderAlamat').value = '';
+        document.getElementById('senderPoskod').value = '';
+        document.getElementById('senderBandar').value = '';
+        document.getElementById('senderNegeri').value = '';
+        updatePreview();
+      });
+      document.getElementById('clearPenerimaBtn').addEventListener('click', () => {
+        document.getElementById('receiverGelaran').value = 'Tiada';
+        document.getElementById('receiverNama').value = '';
+        document.getElementById('receiverJawatan').value = '';
+        document.getElementById('receiverSyarikat').value = '';
+        document.getElementById('receiverAlamat').value = '';
+        document.getElementById('receiverPoskod').value = '';
+        document.getElementById('receiverBandar').value = '';
+        document.getElementById('receiverNegeri').value = '';
+        document.getElementById('receiverGelaranLain').value = '';
         document.getElementById('receiverGelaranLain').classList.add('hidden');
-      }
-      updatePreview();
-    });
-    
-    // Pengurusan Kandungan
-    document.getElementById('addKandunganBtn').addEventListener('click', () => {
-      const container = document.getElementById('kandunganFields');
-      const index = container.querySelectorAll('textarea').length;
-      const div = document.createElement('div');
-      div.className = "mb-2 flex items-start space-x-2";
-      div.innerHTML = `<textarea class="border rounded p-2 w-full" placeholder="Kandungan ${index+1}" data-index="${index}"></textarea>
-                       <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm">X</button>`;
-      container.appendChild(div);
-      div.querySelector('textarea').addEventListener('input', updatePreview);
-      div.querySelector('.deleteKandungan').addEventListener('click', function(){
-        div.remove();
         updatePreview();
+      });
+      document.getElementById('clearTarikhBtn').addEventListener('click', () => {
+        document.getElementById('tarikhSurat').value = '';
+        document.getElementById('tarikhAkhir').value = '';
+        updatePreview();
+      });
+      document.getElementById('clearKandunganBtn').addEventListener('click', () => {
+        document.getElementById('kandunganFields').innerHTML = `<div class="mb-2 flex items-start space-x-2">
+            <textarea class="border rounded p-2 w-full" placeholder="Kandungan 1" data-index="0"></textarea>
+            <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm hidden">X</button>
+          </div>`;
         toggleDeleteButtons();
-      });
-      toggleDeleteButtons();
-    });
-    
-    function toggleDeleteButtons() {
-      const allDeleteBtns = document.querySelectorAll('.deleteKandungan');
-      allDeleteBtns.forEach(btn => {
-        if(document.querySelectorAll('#kandunganFields textarea').length > 1){
-          btn.classList.remove('hidden');
-        } else {
-          btn.classList.add('hidden');
-        }
-      });
-    }
-    
-    // Pengurusan pilihan Signature
-    document.querySelectorAll('input[name="signatureOption"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        if(radio.value === 'text'){
-          document.getElementById('signatureTextContainer').classList.remove('hidden');
-          document.getElementById('signatureDrawContainer').classList.add('hidden');
-        } else {
-          document.getElementById('signatureDrawContainer').classList.remove('hidden');
-          document.getElementById('signatureTextContainer').classList.add('hidden');
-        }
         updatePreview();
       });
-    });
-    
-    // Lukisan pada kanvas signature
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    let drawing = false;
-    function startDrawing(e) {
-      drawing = true;
-      draw(e);
-    }
-    function endDrawing() {
-      drawing = false;
-      ctx.beginPath();
-      updatePreview();
-    }
-    function draw(e) {
-      if(!drawing) return;
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      let x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      let y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mouseup', endDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchend', endDrawing);
-    canvas.addEventListener('touchmove', draw);
-    
-    document.getElementById('clearCanvasBtn').addEventListener('click', () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      updatePreview();
-    });
-    
-    // Butang Clear Section untuk setiap bahagian
-    document.getElementById('clearPengirimBtn').addEventListener('click', () => {
-      document.getElementById('senderNama').value = '';
-      document.getElementById('senderJawatan').value = '';
-      document.getElementById('senderJabatan').value = '';
-      document.getElementById('senderSyarikat').value = '';
-      document.getElementById('senderAlamat').value = '';
-      document.getElementById('senderPoskod').value = '';
-      document.getElementById('senderBandar').value = '';
-      document.getElementById('senderNegeri').value = '';
-      updatePreview();
-    });
-    document.getElementById('clearPenerimaBtn').addEventListener('click', () => {
-      document.getElementById('receiverGelaran').value = 'Tiada';
-      document.getElementById('receiverNama').value = '';
-      document.getElementById('receiverJawatan').value = '';
-      document.getElementById('receiverSyarikat').value = '';
-      document.getElementById('receiverAlamat').value = '';
-      document.getElementById('receiverPoskod').value = '';
-      document.getElementById('receiverBandar').value = '';
-      document.getElementById('receiverNegeri').value = '';
-      document.getElementById('receiverGelaranLain').value = '';
-      document.getElementById('receiverGelaranLain').classList.add('hidden');
-      updatePreview();
-    });
-    document.getElementById('clearTarikhBtn').addEventListener('click', () => {
-      document.getElementById('tarikhSurat').value = '';
-      document.getElementById('tarikhAkhir').value = '';
-      updatePreview();
-    });
-    document.getElementById('clearKandunganBtn').addEventListener('click', () => {
-      document.getElementById('kandunganFields').innerHTML = `<div class="mb-2 flex items-start space-x-2">
-          <textarea class="border rounded p-2 w-full" placeholder="Kandungan 1" data-index="0"></textarea>
-          <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm hidden">X</button>
-        </div>`;
-      toggleDeleteButtons();
-      updatePreview();
-    });
-    document.getElementById('clearAttachmentBtn').addEventListener('click', () => {
-      document.getElementById('attachmentsInput').value = '';
-      updatePreview();
-    });
-    document.getElementById('clearSignatureBtn').addEventListener('click', () => {
-      document.getElementById('signatureText').value = '';
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      updatePreview();
-    });
-    document.getElementById('clearAllBtn').addEventListener('click', () => {
-      document.querySelectorAll('input, textarea, select').forEach(el => {
-        if(el.type === 'radio' || el.type === 'checkbox') return;
-        el.value = '';
+      document.getElementById('clearAttachmentBtn').addEventListener('click', () => {
+        document.getElementById('attachmentsInput').value = '';
+        updatePreview();
       });
-      document.getElementById('kandunganFields').innerHTML = `<div class="mb-2 flex items-start space-x-2">
-          <textarea class="border rounded p-2 w-full" placeholder="Kandungan 1" data-index="0"></textarea>
-          <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm hidden">X</button>
-        </div>`;
-      toggleDeleteButtons();
-      document.querySelector('input[name="signatureOption"][value="text"]').checked = true;
-      document.getElementById('signatureTextContainer').classList.remove('hidden');
-      document.getElementById('signatureDrawContainer').classList.add('hidden');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('clearSignatureBtn').addEventListener('click', () => {
+        document.getElementById('signatureText').value = '';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        updatePreview();
+      });
+      document.getElementById('clearAllBtn').addEventListener('click', () => {
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+          if(el.type === 'radio' || el.type === 'checkbox') return;
+          el.value = '';
+        });
+        document.getElementById('kandunganFields').innerHTML = `<div class="mb-2 flex items-start space-x-2">
+            <textarea class="border rounded p-2 w-full" placeholder="Kandungan 1" data-index="0"></textarea>
+            <button class="deleteKandungan bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-sm hidden">X</button>
+          </div>`;
+        toggleDeleteButtons();
+        document.querySelector('input[name="signatureOption"][value="text"]').checked = true;
+        document.getElementById('signatureTextContainer').classList.remove('hidden');
+        document.getElementById('signatureDrawContainer').classList.add('hidden');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        updatePreview();
+      });
+      
+      // Butang Muat Turun PDF
+      document.getElementById('downloadBtn').addEventListener('click', () => {
+        const letterElement = document.getElementById('letterPreview');
+        if (!letterElement) {
+          console.error("Elemen 'letterPreview' tidak ditemui.");
+          return;
+        }
+        const opt = {
+          margin: 0.5,
+          filename: 'Surat-Perletakan-Jawatan.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(letterElement).set(opt).save()
+        .then(() => { console.log("PDF berjaya dijana."); })
+        .catch(err => { console.error("Ralat ketika menjana PDF:", err); });
+      });
+      
       updatePreview();
     });
-    
-    // Butang Muat Turun PDF - Pastikan PDF dijana dengan promise untuk debug
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      const letterElement = document.getElementById('letterPreview');
-      if (!letterElement) {
-        console.error("Elemen 'letterPreview' tidak ditemui.");
-        return;
-      }
-      const opt = {
-        margin: 0.5,
-        filename: 'Surat-Perletakan-Jawatan.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().from(letterElement).set(opt).save()
-      .then(() => { console.log("PDF berjaya dijana."); })
-      .catch(err => { console.error("Ralat ketika menjana PDF:", err); });
-    });
-    
-    updatePreview();
   </script>
 </body>
 </html>
